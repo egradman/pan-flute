@@ -1,0 +1,35 @@
+# Pan Flute Website - Cloudflare Pages configuration
+# Deployed via: npx wrangler pages deploy
+
+name = "pan-flute-web"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ---------------------------------------------------------------------------
+# R2 Bucket: Temporary STL file storage (7-day lifecycle expiry)
+# ---------------------------------------------------------------------------
+[[r2_buckets]]
+binding = "STL_BUCKET"
+bucket_name = "pan-flute-stls"
+
+# ---------------------------------------------------------------------------
+# KV Namespace: Order and download token storage
+# ---------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "ORDER_KV"
+id = "PLACEHOLDER_KV_NAMESPACE_ID"  # Replace after running: wrangler kv:namespace create ORDER_KV
+
+# ---------------------------------------------------------------------------
+# Environment variables (non-secret)
+# ---------------------------------------------------------------------------
+[vars]
+ENVIRONMENT = "production"
+FLYIO_RENDER_URL = "https://pan-flute-render.fly.dev"  # Update with actual Fly.io app URL
+
+# ---------------------------------------------------------------------------
+# Secrets (set via `wrangler pages secret put <NAME>`):
+#
+#   STRIPE_SECRET_KEY      - Stripe API secret key (sk_live_... or sk_test_...)
+#   STRIPE_WEBHOOK_SECRET  - Stripe webhook signing secret (whsec_...)
+#   FLYIO_RENDER_SECRET    - Shared secret for authenticating requests to Fly.io render service
+# ---------------------------------------------------------------------------

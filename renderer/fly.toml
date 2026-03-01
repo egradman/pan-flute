@@ -1,0 +1,39 @@
+# Fly.io configuration for the pan-flute renderer service.
+#
+# Deploy from the project root (one level above this file):
+#   flyctl deploy --config renderer/fly.toml --dockerfile renderer/Dockerfile
+
+app = "pan-flute-renderer"
+primary_region = "iad"
+kill_signal = "SIGINT"
+kill_timeout = 30
+
+[build]
+  # Build context is the project root (../) so the Dockerfile can COPY
+  # generate_notes.py, pan_flute.scad, pan_tube.stl, and renderer/server.py.
+
+[env]
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 2
+    soft_limit = 1
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

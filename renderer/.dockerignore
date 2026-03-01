@@ -1,0 +1,15 @@
+# Ignore everything, then whitelist what the Dockerfile COPYs.
+# (The build context is the project root, so this file is advisory.)
+*.wav
+*.md
+*.json
+.git
+.github
+__pycache__
+node_modules
+renderer/.dockerignore
+PLAN.md
+test.stl
+mario.stl
+mario.json
+notes.scad

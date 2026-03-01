@@ -3,6 +3,9 @@
 
 include <notes.scad>
 
+// --- Parameters (overridable via -D on command line) ---
+nameplate_text     = "MARIO";   // override with: openscad -D 'nameplate_text="YOUR TEXT"'
+
 // --- Constants ---
 tube_id            = 7.022;     // inner diameter (mm), from OBJ vertex analysis
 tube_od            = 9.994;     // outer diameter (mm), from OBJ vertex analysis
@@ -12,10 +15,17 @@ obj_total_length   = 34.766;    // OBJ Y extent (mm)
 obj_resonating_length = 19.768; // resonating portion of OBJ (mm)
 speed_of_sound     = 343000;    // mm/s (343 m/s at 20°C)
 end_correction_factor = 0.82;   // empirical end-correction multiplier
+row_offset         = tube_od / 2 - 0.75;  // Z offset between rows
+fill_d             = 4;          // fill cylinder diameter (mm)
+nameplate_depth    = 0.5;        // impression depth (mm)
+nameplate_draft    = 0.2;        // taper per side for 3D printing (mm)
 
 // --- Functions ---
 function extension_length(freq) =
     speed_of_sound / (4 * freq) - end_correction_factor * tube_id - obj_resonating_length;
+
+function tube_length(freq) =
+    obj_total_length + max(0, extension_length(freq));
 
 // --- Modules ---
 module tube_assembly(freq) {
@@ -41,17 +51,105 @@ module tube_assembly(freq) {
 
 module chord_column(freq_up, freq_down) {
     // Top row — offset up in Z
-    translate([0, 0, tube_od / 2 - 0.75])
+    translate([0, 0, row_offset])
         tube_assembly(freq_up);
     // Bottom row — offset down in Z, rotated 180° around Y (long axis)
-    translate([0, 0, -(tube_od / 2 - 0.75)])
+    translate([0, 0, -row_offset])
         rotate([0, 180, 0])
             tube_assembly(freq_down);
 }
 
+module row_fill() {
+    // Solid bar spanning all columns, mouth to start of resonating bore
+    // with bore holes preserved
+    mouth_length = obj_total_length - obj_resonating_length;
+    total_x = (len(note_pairs) - 1) * tube_spacing;
+    difference() {
+        translate([0, 0, -tube_od/2])
+            cube([total_x, mouth_length, tube_od]);
+        for (i = [0 : len(note_pairs) - 1])
+            translate([i * tube_spacing, -1, 0])
+                rotate([-90, 0, 0])
+                    cylinder(d=tube_id, h=mouth_length + 2, $fn=60);
+    }
+}
+
+module fill_gap(i) {
+    min_len = min([
+        tube_length(note_pairs[i][0]),
+        tube_length(note_pairs[i][1]),
+        tube_length(note_pairs[i+1][0]),
+        tube_length(note_pairs[i+1][1])
+    ]);
+    translate([(i + 0.5) * tube_spacing, 0, 0])
+        rotate([-90, 0, 0])
+            cylinder(d=fill_d, h=min_len, $fn=30);
+}
+
+// General-purpose tapered impressed text — creates a solid at the origin for subtraction.
+// Front face (surface) at Z=0, back face at Z=depth. Caller positions and rotates.
+module impressed_text(str, size=4, depth=nameplate_depth, draft=nameplate_draft, font="Liberation Sans:style=Bold", halign="center", valign="center") {
+    s = (size - 2*draft) / size;
+    linear_extrude(height = depth + 0.01, scale = [s, s])
+        text(str, size=size, font=font, halign=halign, valign=valign);
+}
+
+// Nameplate cut in global coordinates
+module nameplate_cut() {
+    mouth_length = obj_total_length - obj_resonating_length;
+    np_width = (len(note_pairs) - 1) * tube_spacing;
+    np_length = (mouth_length - tube_od) * 1.2;
+    top_z = row_offset + tube_od / 2;
+
+    // Flat pocket with tapered walls — bottom face centered, scales up to top
+    translate([np_width/2, tube_od/2 + np_length/2, top_z - nameplate_depth])
+        linear_extrude(height = nameplate_depth + 1, scale = [
+            np_width / (np_width - 2*nameplate_draft),
+            np_length / (np_length - 2*nameplate_draft)
+        ])
+            square([np_width - 2*nameplate_draft, np_length - 2*nameplate_draft], center=true);
+}
+
 // --- Main assembly ---
-union() {
-    for (i = [0 : len(note_pairs) - 1])
-        translate([i * tube_spacing, 0, 0])
-            chord_column(note_pairs[i][0], note_pairs[i][1]);
+difference() {
+    union() {
+        for (i = [0 : len(note_pairs) - 1])
+            translate([i * tube_spacing, 0, 0])
+                chord_column(note_pairs[i][0], note_pairs[i][1]);
+
+        // Fill interstitial gaps between adjacent columns
+        for (i = [0 : len(note_pairs) - 2])
+            fill_gap(i);
+
+        // Fill between OBJ sounding boards on top and bottom rows
+        translate([0, 0, row_offset])
+            row_fill();
+        translate([0, 0, -row_offset])
+            row_fill();
+    }
+
+    // Nameplate impression — cuts both fill bar and tube tops flat
+    nameplate_cut();
+
+    // Nameplate text
+    np_center_x = (len(note_pairs) - 1) * tube_spacing / 2;
+    np_center_y = tube_od/2 + ((obj_total_length - obj_resonating_length) - tube_od) * 1.2 / 2;
+    np_floor_z = row_offset + tube_od / 2 - nameplate_depth;
+    translate([np_center_x, np_center_y, np_floor_z])
+        mirror([0, 0, 1])
+            impressed_text(nameplate_text, depth=0.4);
+
+    // Note name labels impressed into each tube's end cap
+    for (i = [0 : len(note_pairs) - 1]) {
+        // Top row
+        translate([i * tube_spacing, tube_length(note_pairs[i][0]) + 0.01, row_offset])
+            rotate([90, 0, 0])
+                mirror([1, 0, 0])
+                    impressed_text(note_names[i][0], size=2.25, depth=0.4);
+        // Bottom row
+        translate([i * tube_spacing, tube_length(note_pairs[i][1]) + 0.01, -row_offset])
+            rotate([90, 0, 0])
+                mirror([1, 0, 0])
+                    impressed_text(note_names[i][1], size=2.25, depth=0.4);
+    }
 }

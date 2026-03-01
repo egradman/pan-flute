@@ -57,6 +57,15 @@ def main():
     lines.append("];")
     lines.append("")
 
+    name_entries = []
+    for pair in pairs:
+        name_up, name_down = pair
+        name_entries.append(f'  ["{name_up}", "{name_down}"]')
+    lines.append("note_names = [")
+    lines.append(",\n".join(name_entries))
+    lines.append("];")
+    lines.append("")
+
     with open(output_path, 'w') as f:
         f.write("\n".join(lines))
 

@@ -3,12 +3,21 @@
 .dolt/
 *.db
 
+# Python
+__pycache__/
+
+# Credentials / secrets
+credentials/
+web/.dev.vars
+web/.env
+web/.env.local
+web/.env.production.local
+web/.env.development.local
+
 # Next.js / web
 web/node_modules/
 web/.next/
 web/out/
 web/.vercel/
-web/.env
-web/.env.local
-web/.env.production.local
-web/.env.development.local
+web/.wrangler/
+web/tsconfig.tsbuildinfo

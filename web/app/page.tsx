@@ -14,14 +14,17 @@ const FlutePreview = dynamic(() => import("@/components/FlutePreview"), {
   ssr: false,
 });
 
-/** Default design: 4 columns with a simple C major arpeggio. */
+/** Default design: Super Mario Bros theme. */
 function defaultDesign(): FluteDesign {
   return {
     pairs: [
-      toNotePair(["C5"]),
-      toNotePair(["E5"]),
-      toNotePair(["G5"]),
-      toNotePair(["C6"]),
+      toNotePair(["C6", "E6"]),
+      toNotePair(["G5", "B5"]),
+      toNotePair(["E5", "G#5"]),
+      toNotePair(["A5", "C#6"]),
+      toNotePair(["B5", "D#6"]),
+      toNotePair(["Bb5", "D6"]),
+      toNotePair(["A5", "C#6"]),
     ],
     nameplate: "",
   };

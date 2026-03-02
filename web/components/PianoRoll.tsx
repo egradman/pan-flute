@@ -1,11 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { NOTE_NAMES, isBlackKey, toNotePair } from "@/lib/notes";
+import { NOTE_NAMES, isBlackKey, toNotePair, parseNote } from "@/lib/notes";
 import type { FluteDesign, NoteName, NotePair } from "@/lib/notes";
 
 const MIN_COLUMNS = 2;
 const MAX_COLUMNS = 16;
+
+/** Sweet spot range — notes that sound best on a printed pan flute. */
+const SWEET_SPOT_LOW = "E5";
+const SWEET_SPOT_HIGH = "E6";
+
+const SWEET_SPOT_LOW_MIDI = parseNote(SWEET_SPOT_LOW);
+const SWEET_SPOT_HIGH_MIDI = parseNote(SWEET_SPOT_HIGH);
+
+function inSweetSpot(note: NoteName): boolean {
+  const midi = parseNote(note);
+  return midi >= SWEET_SPOT_LOW_MIDI && midi <= SWEET_SPOT_HIGH_MIDI;
+}
 
 /** NOTE_NAMES is low-to-high (C4..C7); we want high notes at the top. */
 const ROWS: NoteName[] = [...NOTE_NAMES].reverse();
@@ -201,6 +213,7 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
           <tbody>
             {ROWS.map((note) => {
               const black = isBlackKey(note);
+              const sweet = inSweetSpot(note);
               return (
                 <tr key={note}>
                   {/* Piano key label — sticky left, narrower on mobile */}
@@ -215,6 +228,7 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
                       paddingLeft: "var(--label-px)",
                       paddingRight: "var(--label-px)",
                       fontSize: "var(--label-fs)",
+                      borderLeft: sweet ? "3px solid #d97706" : undefined,
                     }}
                   >
                     {note}
@@ -230,9 +244,13 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
                         className={`cursor-pointer border border-bamboo-100 transition-colors duration-75 ${
                           active
                             ? "bg-amber-400 hover:bg-amber-500 active:bg-amber-600"
-                            : black
-                              ? "bg-bamboo-100 hover:bg-bamboo-200 active:bg-bamboo-300"
-                              : "bg-white hover:bg-bamboo-50 active:bg-bamboo-100"
+                            : sweet
+                              ? black
+                                ? "bg-amber-100 hover:bg-amber-200 active:bg-amber-300"
+                                : "bg-amber-50 hover:bg-amber-100 active:bg-amber-200"
+                              : black
+                                ? "bg-bamboo-100 hover:bg-bamboo-200 active:bg-bamboo-300"
+                                : "bg-white hover:bg-bamboo-50 active:bg-bamboo-100"
                         }`}
                         style={{
                           width: "var(--cell-w)",

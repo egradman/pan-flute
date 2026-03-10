@@ -58,67 +58,112 @@ export default function Home() {
       {/* ================================================================ */}
       {/* Hero Section                                                      */}
       {/* ================================================================ */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-violet-500 via-fuchsia-500 to-orange-400 px-4 py-16 text-center sm:py-20">
+      <header className="relative overflow-hidden bg-gradient-to-br from-violet-500 via-fuchsia-500 to-orange-400 px-4 py-12 sm:py-16">
         {/* Decorative background shapes */}
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-yellow-300/20" />
         <div className="pointer-events-none absolute right-1/4 top-10 h-20 w-20 rounded-full bg-sky-300/20" />
 
-        <div className="relative mx-auto max-w-2xl">
-          <h1 className="animate-fade-in-up mb-6 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+        <div className="relative mx-auto max-w-5xl">
+          <h1 className="animate-fade-in-up mb-8 text-center font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
             One-Song Pan Flutes
           </h1>
 
-          {/* Dash's intro */}
-          <div
-            className="animate-scale-in mx-auto max-w-lg rounded-2xl bg-white/20 p-6 text-left backdrop-blur-sm"
-            style={{ animationDelay: "200ms" }}
-          >
-            <div className="mb-4 flex items-center gap-4">
-              <Image
-                src="/dash.jpg"
-                alt="Dash, age 9"
-                width={64}
-                height={64}
-                className="rounded-full border-2 border-white/50 object-cover shadow-md"
-              />
-              <div>
-                <p className="font-display text-lg font-bold text-white">
+          {/* Hero grid: Dash photo | intro text | flute photo */}
+          <div className="grid items-center gap-6 sm:grid-cols-[1fr_2fr_1fr] lg:gap-8">
+            {/* Dash photo */}
+            <div
+              className="animate-scale-in hidden sm:block"
+              style={{ animationDelay: "100ms" }}
+            >
+              <div className="overflow-hidden rounded-2xl border-4 border-white/30 shadow-xl">
+                <Image
+                  src="/dash.jpg"
+                  alt="Dash, age 9, excited about pan flutes"
+                  width={400}
+                  height={400}
+                  className="aspect-square object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Intro text */}
+            <div
+              className="animate-scale-in rounded-2xl bg-white/20 p-6 text-left backdrop-blur-sm"
+              style={{ animationDelay: "200ms" }}
+            >
+              {/* Mobile-only inline photo of Dash */}
+              <div className="mb-4 flex items-center gap-4 sm:hidden">
+                <Image
+                  src="/dash.jpg"
+                  alt="Dash, age 9"
+                  width={64}
+                  height={64}
+                  className="rounded-full border-2 border-white/50 object-cover shadow-md"
+                />
+                <div>
+                  <p className="font-display text-lg font-bold text-white">
+                    Hi, I&apos;m Dash!
+                  </p>
+                  <p className="text-sm font-medium text-white/80">
+                    Age 9 &middot; 3D printing enthusiast
+                  </p>
+                </div>
+              </div>
+              {/* Desktop intro */}
+              <div className="mb-4 hidden sm:block">
+                <p className="font-display text-xl font-bold text-white lg:text-2xl">
                   Hi, I&apos;m Dash!
                 </p>
                 <p className="text-sm font-medium text-white/80">
                   Age 9 &middot; 3D printing enthusiast
                 </p>
               </div>
+              <p className="mb-3 text-base leading-relaxed text-white/90">
+                I got a 3D printer recently and the first thing I printed was a
+                pan flute. Only problem? I can&apos;t actually play any songs on
+                it.
+              </p>
+              <p className="mb-3 text-base leading-relaxed text-white/90">
+                So my dad and I vibe-coded this website to let you design pan
+                flutes that can at least play{" "}
+                <span className="font-bold text-yellow-200">ONE song</span>. You
+                pick the notes (two-note chords supported!), we generate a custom
+                STL, and you print your very own flute.
+              </p>
+              <p className="text-sm font-medium text-white/70">
+                All proceeds go directly to my printer filament budget.
+              </p>
+              <p className="mt-3 text-sm text-white/60">
+                Want the technical details? Check out our{" "}
+                <a
+                  href="https://github.com/egradman/pan-flute"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 transition-colors hover:text-white"
+                >
+                  GitHub
+                </a>{" "}
+                with all the code. For educational purposes only; $2.99 is cheaper
+                than the time you&apos;ll waste getting it running.
+              </p>
             </div>
-            <p className="mb-3 text-base leading-relaxed text-white/90">
-              I got a 3D printer recently and the first thing I printed was a
-              pan flute. Only problem? I can&apos;t actually play any songs on
-              it.
-            </p>
-            <p className="mb-3 text-base leading-relaxed text-white/90">
-              So my dad and I vibe-coded this website to let you design pan
-              flutes that can at least play{" "}
-              <span className="font-bold text-yellow-200">ONE song</span>. You
-              pick the notes (two-note chords supported!), we generate a custom
-              STL, and you print your very own flute.
-            </p>
-            <p className="text-sm font-medium text-white/70">
-              All proceeds go directly to my printer filament budget.
-            </p>
-            <p className="mt-3 text-sm text-white/60">
-              Want the technical details? Check out our{" "}
-              <a
-                href="https://github.com/egradman/pan-flute"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 transition-colors hover:text-white"
-              >
-                GitHub
-              </a>{" "}
-              with all the code. For educational purposes only; $2.99 is cheaper
-              than the time you&apos;ll waste getting it running.
-            </p>
+
+            {/* Flute print photo */}
+            <div
+              className="animate-scale-in hidden sm:block"
+              style={{ animationDelay: "300ms" }}
+            >
+              <div className="overflow-hidden rounded-2xl border-4 border-white/30 shadow-xl">
+                <Image
+                  src="/flute-print.jpg"
+                  alt="3D-printed pan flute fresh off the Bambu Lab printer"
+                  width={400}
+                  height={400}
+                  className="aspect-square object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -186,43 +231,45 @@ export default function Home() {
         {/* Main Editor Area                                                  */}
         {/* ================================================================ */}
         <section id="editor" className="px-4 py-14">
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-6xl">
             <h2 className="mb-8 text-center font-display text-2xl font-bold text-slate-800 sm:text-3xl">
               Your Flute
             </h2>
 
-            {/* Piano Roll */}
-            <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-              <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-violet-500">
-                Melody Grid
-              </h3>
-              <PianoRoll design={design} onChange={setDesign} />
-            </div>
+            <div className="grid items-start gap-6 lg:grid-cols-2">
+              {/* Left column: Melody + Playback + Nameplate */}
+              <div>
+                <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                  <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-violet-500">
+                    Melody Grid
+                  </h3>
+                  <PianoRoll design={design} onChange={setDesign} />
+                </div>
 
-            {/* Playback */}
-            <div className="mb-8 flex justify-center">
-              <PlayButton design={design} />
-            </div>
+                <div className="mb-6 flex justify-center">
+                  <PlayButton design={design} />
+                </div>
 
-            {/* Nameplate */}
-            <div className="mx-auto mb-10 max-w-md rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-              <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-orange-500">
-                Personalize
-              </h3>
-              <NameplateInput
-                value={design.nameplate}
-                onChange={(text) =>
-                  setDesign((prev) => ({ ...prev, nameplate: text }))
-                }
-              />
-            </div>
+                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+                  <h3 className="mb-3 font-display text-sm font-bold uppercase tracking-wider text-orange-500">
+                    Personalize
+                  </h3>
+                  <NameplateInput
+                    value={design.nameplate}
+                    onChange={(text) =>
+                      setDesign((prev) => ({ ...prev, nameplate: text }))
+                    }
+                  />
+                </div>
+              </div>
 
-            {/* 3D Preview */}
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-              <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-sky-500">
-                3D Preview
-              </h3>
-              <FlutePreview design={design} />
+              {/* Right column: 3D Preview */}
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:sticky lg:top-4">
+                <h3 className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-sky-500">
+                  3D Preview
+                </h3>
+                <FlutePreview design={design} />
+              </div>
             </div>
           </div>
         </section>

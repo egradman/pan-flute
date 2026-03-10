@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { NOTE_NAMES, isBlackKey, toNotePair, parseNote } from "@/lib/notes";
 import type { FluteDesign, NoteName, NotePair } from "@/lib/notes";
 
@@ -65,6 +65,10 @@ function usePortraitHint(): boolean {
 export default function PianoRoll({ design, onChange }: PianoRollProps) {
   const { pairs } = design;
   const showPortraitHint = usePortraitHint();
+  const gridRef = useRef<HTMLTableElement>(null);
+
+  // Roving tabindex: track which cell is focusable
+  const [focusPos, setFocusPos] = useState({ row: 0, col: 0 });
 
   // --- column mutations ------------------------------------------------
 
@@ -84,34 +88,84 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
       pairs: pairs.slice(0, -1),
     };
     onChange(updated);
+    // Clamp focus position if needed
+    if (focusPos.col >= pairs.length - 1) {
+      setFocusPos((prev) => ({ ...prev, col: Math.max(0, pairs.length - 2) }));
+    }
   }
 
   // --- cell click logic ------------------------------------------------
 
-  function toggleNote(colIndex: number, note: NoteName) {
-    const pair = pairs[colIndex];
-    const current = activeNotes(pair);
-    const isActive = current.includes(note);
+  const toggleNote = useCallback(
+    (colIndex: number, note: NoteName) => {
+      const pair = pairs[colIndex];
+      const current = activeNotes(pair);
+      const isActive = current.includes(note);
 
-    let next: NoteName[];
+      let next: NoteName[];
 
-    if (isActive) {
-      const remaining = current.filter((n) => n !== note);
-      if (remaining.length === 0) {
-        return;
-      }
-      next = remaining;
-    } else {
-      if (current.length < 2) {
-        next = [...current, note];
+      if (isActive) {
+        const remaining = current.filter((n) => n !== note);
+        if (remaining.length === 0) {
+          return;
+        }
+        next = remaining;
       } else {
-        next = [current[1], note];
+        if (current.length < 2) {
+          next = [...current, note];
+        } else {
+          next = [current[1], note];
+        }
       }
+
+      const newPairs = [...pairs];
+      newPairs[colIndex] = toNotePair(next);
+      onChange({ ...design, pairs: newPairs });
+    },
+    [pairs, design, onChange]
+  );
+
+  // --- keyboard navigation (roving tabindex) ----------------------------
+
+  function handleCellKeyDown(
+    e: React.KeyboardEvent,
+    rowIdx: number,
+    colIdx: number
+  ) {
+    let nextRow = rowIdx;
+    let nextCol = colIdx;
+
+    switch (e.key) {
+      case "ArrowUp":
+        nextRow = Math.max(0, rowIdx - 1);
+        e.preventDefault();
+        break;
+      case "ArrowDown":
+        nextRow = Math.min(ROWS.length - 1, rowIdx + 1);
+        e.preventDefault();
+        break;
+      case "ArrowLeft":
+        nextCol = Math.max(0, colIdx - 1);
+        e.preventDefault();
+        break;
+      case "ArrowRight":
+        nextCol = Math.min(pairs.length - 1, colIdx + 1);
+        e.preventDefault();
+        break;
+      case "Enter":
+      case " ":
+        toggleNote(colIdx, ROWS[rowIdx]);
+        e.preventDefault();
+        return;
+      default:
+        return;
     }
 
-    const newPairs = [...pairs];
-    newPairs[colIndex] = toNotePair(next);
-    onChange({ ...design, pairs: newPairs });
+    setFocusPos({ row: nextRow, col: nextCol });
+    const cell = gridRef.current?.querySelector(
+      `[data-row="${nextRow}"][data-col="${nextCol}"]`
+    ) as HTMLElement;
+    cell?.focus();
   }
 
   // --- render ----------------------------------------------------------
@@ -120,7 +174,7 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
     <div className="w-full">
       {/* Landscape orientation hint for portrait mobile users */}
       {showPortraitHint && (
-        <div className="mb-3 flex items-center justify-center gap-2 rounded-lg bg-bamboo-100 px-3 py-2 text-sm text-bamboo-700">
+        <div className="mb-3 flex items-center justify-center gap-2 rounded-lg bg-violet-100 px-3 py-2 text-sm text-violet-700">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-4 w-4 flex-shrink-0"
@@ -139,16 +193,16 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
         </div>
       )}
 
-      {/* Column add/remove controls — larger tap targets on mobile */}
+      {/* Column add/remove controls */}
       <div className="mb-3 flex items-center gap-3">
-        <span className="text-sm font-medium text-bamboo-700">
+        <span className="text-sm font-medium text-slate-700">
           Columns: {pairs.length}
         </span>
         <button
           type="button"
           onClick={removeColumn}
           disabled={pairs.length <= MIN_COLUMNS}
-          className="flex h-9 w-9 sm:h-7 sm:w-7 items-center justify-center rounded-md border border-bamboo-300 bg-white text-bamboo-700 text-lg leading-none transition-colors hover:bg-bamboo-50 active:bg-bamboo-100 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 text-lg leading-none transition-colors hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Remove column"
         >
           &minus;
@@ -157,51 +211,33 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
           type="button"
           onClick={addColumn}
           disabled={pairs.length >= MAX_COLUMNS}
-          className="flex h-9 w-9 sm:h-7 sm:w-7 items-center justify-center rounded-md border border-bamboo-300 bg-white text-bamboo-700 text-lg leading-none transition-colors hover:bg-bamboo-50 active:bg-bamboo-100 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-10 w-10 sm:h-8 sm:w-8 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 text-lg leading-none transition-colors hover:bg-slate-50 active:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Add column"
         >
           +
         </button>
       </div>
 
-      {/* Scrollable grid wrapper — touch-friendly scrolling */}
+      {/* Scrollable grid wrapper */}
       <div
-        className="overflow-x-auto rounded-xl border border-bamboo-200 bg-white/60 shadow-sm backdrop-blur-sm"
+        className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
-        {/*
-         * CSS custom properties drive cell sizing responsively.
-         * Mobile: 32px wide x 26px tall (touch-friendly).
-         * sm (640px+): 36px wide x 20px tall (compact desktop).
-         */}
-        <style>{`
-          .piano-roll-grid {
-            --cell-w: 32px;
-            --cell-h: 26px;
-            --label-px: 4px;
-            --label-fs: 10px;
-          }
-          @media (min-width: 640px) {
-            .piano-roll-grid {
-              --cell-w: 36px;
-              --cell-h: 20px;
-              --label-px: 8px;
-              --label-fs: 11px;
-            }
-          }
-        `}</style>
         <table
+          ref={gridRef}
           className="piano-roll-grid border-collapse"
           style={{ minWidth: "max-content" }}
+          role="grid"
+          aria-label="Melody grid — click or use arrow keys to select notes for each pipe"
         >
           <thead>
             <tr>
               {/* Empty corner cell above piano labels */}
-              <th className="sticky left-0 z-10 bg-bamboo-50 border-b border-r border-bamboo-200 px-1 py-1" />
+              <th className="sticky left-0 z-10 border-b border-r border-slate-200 bg-slate-50 px-1 py-1" />
               {pairs.map((_, colIdx) => (
                 <th
                   key={colIdx}
-                  className="border-b border-bamboo-200 px-0 py-1 text-center text-xs font-semibold text-bamboo-500"
+                  className="border-b border-slate-200 px-0 py-1 text-center font-display text-xs font-bold text-slate-400"
                   style={{ minWidth: "var(--cell-w)" }}
                 >
                   {colIdx + 1}
@@ -211,37 +247,54 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
           </thead>
 
           <tbody>
-            {ROWS.map((note) => {
+            {ROWS.map((note, rowIdx) => {
               const black = isBlackKey(note);
               const sweet = inSweetSpot(note);
               return (
-                <tr key={note}>
-                  {/* Piano key label — sticky left, narrower on mobile */}
+                <tr key={note} role="row">
+                  {/* Piano key label — sticky left */}
                   <td
-                    className={`sticky left-0 z-10 select-none whitespace-nowrap border-r border-bamboo-200 py-0 text-right font-mono leading-tight ${
+                    className={`sticky left-0 z-10 select-none whitespace-nowrap border-r border-slate-200 py-0 text-right font-mono leading-tight ${
                       black
-                        ? "bg-bamboo-800 text-bamboo-100"
-                        : "bg-bamboo-50 text-bamboo-600"
+                        ? "bg-slate-700 text-slate-100"
+                        : "bg-slate-50 text-slate-600"
                     }`}
                     style={{
                       height: "var(--cell-h)",
                       paddingLeft: "var(--label-px)",
                       paddingRight: "var(--label-px)",
                       fontSize: "var(--label-fs)",
-                      borderLeft: sweet ? "3px solid #d97706" : undefined,
+                      borderLeft: sweet
+                        ? "3px solid #f59e0b"
+                        : undefined,
                     }}
                   >
                     {note}
                   </td>
 
-                  {/* Grid cells — 32px min on mobile for tap targets, 36px on desktop */}
+                  {/* Grid cells */}
                   {pairs.map((pair, colIdx) => {
                     const active = activeNotes(pair).includes(note);
+                    const isFocusTarget =
+                      focusPos.row === rowIdx && focusPos.col === colIdx;
+
                     return (
                       <td
                         key={colIdx}
-                        onClick={() => toggleNote(colIdx, note)}
-                        className={`cursor-pointer border border-bamboo-100 transition-colors duration-75 ${
+                        role="gridcell"
+                        tabIndex={isFocusTarget ? 0 : -1}
+                        aria-selected={active}
+                        aria-label={`${note}, column ${colIdx + 1}${active ? ", selected" : ""}`}
+                        data-row={rowIdx}
+                        data-col={colIdx}
+                        onClick={() => {
+                          toggleNote(colIdx, note);
+                          setFocusPos({ row: rowIdx, col: colIdx });
+                        }}
+                        onKeyDown={(e) =>
+                          handleCellKeyDown(e, rowIdx, colIdx)
+                        }
+                        className={`cursor-pointer border border-slate-100 transition-colors duration-75 ${
                           active
                             ? "bg-amber-400 hover:bg-amber-500 active:bg-amber-600"
                             : sweet
@@ -249,8 +302,8 @@ export default function PianoRoll({ design, onChange }: PianoRollProps) {
                                 ? "bg-amber-100 hover:bg-amber-200 active:bg-amber-300"
                                 : "bg-amber-50 hover:bg-amber-100 active:bg-amber-200"
                               : black
-                                ? "bg-bamboo-100 hover:bg-bamboo-200 active:bg-bamboo-300"
-                                : "bg-white hover:bg-bamboo-50 active:bg-bamboo-100"
+                                ? "bg-slate-200 hover:bg-slate-300 active:bg-slate-400"
+                                : "bg-white hover:bg-slate-50 active:bg-slate-100"
                         }`}
                         style={{
                           width: "var(--cell-w)",

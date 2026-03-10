@@ -13,19 +13,19 @@ export default async function OrderPage({
   return (
     <main className="flex min-h-screen flex-col items-center px-4 py-12">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-2 text-center text-4xl font-bold tracking-tight text-bamboo-800">
+        <h1 className="mb-2 text-center font-display text-4xl font-bold tracking-tight text-slate-800">
           Your Pan Flute Order
         </h1>
 
-        <p className="mb-8 text-center text-sm text-bamboo-500">
+        <p className="mb-8 text-center text-sm text-slate-500">
           Order&nbsp;
-          <code className="rounded bg-bamboo-100 px-2 py-0.5 text-xs text-bamboo-700">
+          <code className="rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
             {sessionId}
           </code>
         </p>
 
         {/* Client component handles status checking + download */}
-        <div className="mb-10 rounded-xl border border-bamboo-200 bg-white/60 p-8 shadow-sm backdrop-blur">
+        <div className="mb-10 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
           <OrderContent sessionId={sessionId} />
         </div>
 
@@ -33,7 +33,7 @@ export default async function OrderPage({
         <div className="text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-bamboo-600 underline-offset-2 transition-colors hover:text-bamboo-800 hover:underline"
+            className="inline-flex items-center gap-1 font-display font-bold text-violet-600 underline-offset-2 transition-colors hover:text-violet-800 hover:underline"
           >
             <svg
               className="h-4 w-4"

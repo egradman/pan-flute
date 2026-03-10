@@ -89,7 +89,7 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
         {[40, 36, 32, 28, 24, 20, 16].map((h, i) => (
           <div
             key={i}
-            className="w-3 rounded-t-full bg-gradient-to-b from-bamboo-400 to-bamboo-600 animate-pulse"
+            className="w-3 rounded-t-full bg-gradient-to-b from-violet-400 to-violet-600 animate-pulse"
             style={{
               height: `${h}px`,
               animationDelay: `${i * 150}ms`,
@@ -101,9 +101,9 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
 
       {/* Progress bar */}
       <div className="w-full max-w-xs">
-        <div className="h-2 w-full overflow-hidden rounded-full bg-bamboo-100">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-violet-100">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-bamboo-400 to-bamboo-600 transition-all duration-1000 ease-out"
+            className="h-full rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-500 transition-all duration-1000 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -130,8 +130,8 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
                   isComplete
                     ? "bg-green-100 text-green-600"
                     : isActive
-                    ? "bg-bamboo-100 text-bamboo-600 ring-2 ring-bamboo-300 ring-offset-1"
-                    : "bg-bamboo-50 text-bamboo-300"
+                    ? "bg-violet-100 text-violet-600 ring-2 ring-violet-300 ring-offset-1"
+                    : "bg-slate-50 text-slate-300"
                 }`}
               >
                 {isComplete ? (
@@ -149,8 +149,8 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
                   isComplete
                     ? "text-green-700 line-through decoration-green-300"
                     : isActive
-                    ? "font-medium text-bamboo-800"
-                    : "text-bamboo-400"
+                    ? "font-medium text-slate-800"
+                    : "text-slate-400"
                 }`}
               >
                 {stage.label}
@@ -160,8 +160,8 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
               {isActive && (
                 <span className="ml-auto">
                   <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-bamboo-400 opacity-75" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-bamboo-500" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-violet-500" />
                   </span>
                 </span>
               )}
@@ -173,15 +173,15 @@ function LoadingState({ elapsedSeconds }: { elapsedSeconds: number }) {
       {/* Time estimate */}
       <div className="mt-2 text-center">
         {!showLongWait ? (
-          <p className="text-sm text-bamboo-500">
+          <p className="text-sm text-slate-500">
             Usually takes 30&ndash;60 seconds
           </p>
         ) : (
           <div className="space-y-1">
-            <p className="text-sm font-medium text-bamboo-600">
+            <p className="text-sm font-medium text-slate-600">
               Still working &mdash; complex flutes take a bit longer
             </p>
-            <p className="text-xs text-bamboo-400">
+            <p className="text-xs text-slate-400">
               Elapsed: {Math.floor(elapsedSeconds)}s &middot; This can take up to 2 minutes
             </p>
           </div>
@@ -295,13 +295,13 @@ export default function OrderContent({ sessionId }: { sessionId: string }) {
           </svg>
         </div>
 
-        <p className="text-lg font-medium text-bamboo-800">
+        <p className="font-display text-lg font-bold text-slate-800">
           Your STL file is ready!
         </p>
 
         <a
           href={`/api/download/${sessionId}`}
-          className="inline-flex items-center gap-2 rounded-lg bg-bamboo-600 px-8 py-3 text-lg font-semibold text-white shadow-md transition-all hover:bg-bamboo-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-bamboo-400 focus:ring-offset-2 active:scale-95"
+          className="inline-flex items-center gap-2 rounded-xl bg-violet-500 px-8 py-3 font-display text-lg font-bold text-white shadow-md transition-all hover:bg-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2 active:scale-95"
         >
           <svg
             className="h-5 w-5"
@@ -319,7 +319,7 @@ export default function OrderContent({ sessionId }: { sessionId: string }) {
           Download STL
         </a>
 
-        <p className="text-sm text-bamboo-500">
+        <p className="text-sm text-slate-500">
           This download link expires 7 days after purchase.
         </p>
       </div>
@@ -344,17 +344,17 @@ export default function OrderContent({ sessionId }: { sessionId: string }) {
             />
           </svg>
         </div>
-        <p className="text-lg font-medium text-bamboo-800">
+        <p className="font-display text-lg font-bold text-slate-800">
           Download link expired
         </p>
-        <p className="text-sm text-bamboo-500">
+        <p className="text-sm text-slate-500">
           This download link has passed its 7-day expiry window.
         </p>
-        <p className="text-sm text-bamboo-500">
+        <p className="text-sm text-slate-500">
           Please contact us at{" "}
           <a
             href="mailto:support@panflutedesigner.com"
-            className="font-medium text-bamboo-600 underline underline-offset-2 hover:text-bamboo-800"
+            className="font-medium text-violet-600 underline underline-offset-2 hover:text-violet-800"
           >
             support@panflutedesigner.com
           </a>{" "}
@@ -382,31 +382,32 @@ export default function OrderContent({ sessionId }: { sessionId: string }) {
           />
         </svg>
       </div>
-      <p className="text-lg font-medium text-bamboo-800">
+      <p className="font-display text-lg font-bold text-slate-800">
         {status === "not-found"
           ? "Order not found"
           : "Something went wrong"}
       </p>
-      <p className="text-sm text-bamboo-500 text-center">
+      <p className="text-sm text-slate-500 text-center">
         {status === "not-found"
           ? "We couldn't find an order with this ID. It may still be processing, or the link may be incorrect."
           : "An unexpected error occurred while rendering your pan flute. Please try refreshing the page."}
       </p>
       <div className="mt-2 flex flex-col items-center gap-2">
         <button
+          type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex items-center gap-2 rounded-lg border border-bamboo-300 bg-white px-5 py-2 text-sm font-medium text-bamboo-700 shadow-sm transition-colors hover:bg-bamboo-50"
+          className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           Refresh page
         </button>
-        <p className="text-xs text-bamboo-400">
+        <p className="text-xs text-slate-400">
           If the problem persists, contact{" "}
           <a
             href="mailto:support@panflutedesigner.com"
-            className="font-medium text-bamboo-500 underline underline-offset-2 hover:text-bamboo-700"
+            className="font-medium text-violet-500 underline underline-offset-2 hover:text-violet-700"
           >
             support@panflutedesigner.com
           </a>

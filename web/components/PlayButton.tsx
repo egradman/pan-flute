@@ -56,14 +56,14 @@ export default function PlayButton({ design, onPlayingColumn }: PlayButtonProps)
         onClick={playing ? stop : start}
         disabled={disabled}
         className={`
-          inline-flex items-center gap-2 rounded-lg px-5 py-2.5
-          text-sm font-semibold shadow-sm transition-colors
-          focus:outline-none focus:ring-2 focus:ring-bamboo-400 focus:ring-offset-2
+          inline-flex items-center gap-2 rounded-xl px-6 py-3
+          font-display text-sm font-bold shadow-sm transition-colors
+          focus:outline-none focus:ring-2 focus:ring-offset-2
           disabled:cursor-not-allowed disabled:opacity-40
           ${
             playing
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-bamboo-600 text-white hover:bg-bamboo-700"
+              ? "bg-red-500 text-white hover:bg-red-600 focus:ring-red-400"
+              : "bg-violet-500 text-white hover:bg-violet-600 focus:ring-violet-400"
           }
         `}
         aria-label={playing ? "Stop playback" : "Play melody"}
@@ -94,7 +94,10 @@ export default function PlayButton({ design, onPlayingColumn }: PlayButtonProps)
 
       {/* Column indicator while playing */}
       {playing && currentCol >= 0 && (
-        <span className="text-sm font-medium text-bamboo-600">
+        <span
+          className="text-sm font-medium text-violet-600"
+          aria-live="polite"
+        >
           Column {currentCol + 1} / {design.pairs.length}
         </span>
       )}

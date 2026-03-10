@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, Component } from "react";
+import type { ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import type { FluteDesign } from "@/lib/notes";
@@ -18,6 +19,11 @@ const SPEED_OF_SOUND = 343000; // mm/s
 const END_CORRECTION_FACTOR = 0.82;
 const ROW_OFFSET = TUBE_OD / 2 - 0.75;
 
+// Material colors — bamboo-inspired tones for the physical instrument
+const TUBE_COLOR = "#c4915e";
+const GAP_FILL_COLOR = "#b07d4a";
+const BOARD_COLOR = "#a06830";
+
 /** Scale factor: divide mm by this to get scene units. */
 const SCALE = 10;
 
@@ -33,6 +39,47 @@ function tubeLength(noteName: string): number {
     END_CORRECTION_FACTOR * TUBE_ID -
     OBJ_RESONATING_LENGTH;
   return OBJ_TOTAL_LENGTH + Math.max(0, extension);
+}
+
+// ---------------------------------------------------------------------------
+// Error Boundary for WebGL failures
+// ---------------------------------------------------------------------------
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class WebGLErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex h-64 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-center">
+          <div>
+            <p className="mb-1 font-display text-sm font-bold text-slate-700">
+              3D preview requires WebGL
+            </p>
+            <p className="text-xs text-slate-500">
+              Your flute design is still valid — preview is just unavailable on
+              this device.
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -53,7 +100,7 @@ function Tube({ x, y, length }: TubeProps) {
   return (
     <mesh position={[x, scaledLength / 2, y]}>
       <cylinderGeometry args={[scaledOD / 2, scaledOD / 2, scaledLength, 16]} />
-      <meshStandardMaterial color="#c4915e" roughness={0.7} metalness={0.05} />
+      <meshStandardMaterial color={TUBE_COLOR} roughness={0.7} metalness={0.05} />
     </mesh>
   );
 }
@@ -81,7 +128,7 @@ function GapFill({
       <boxGeometry
         args={[gapWidth, scaledHeight, (TUBE_OD * 0.6) / SCALE]}
       />
-      <meshStandardMaterial color="#b07d4a" roughness={0.8} metalness={0.02} />
+      <meshStandardMaterial color={GAP_FILL_COLOR} roughness={0.8} metalness={0.02} />
     </mesh>
   );
 }
@@ -103,7 +150,7 @@ function SoundingBoard({
     <mesh position={[0, scaledBoardHeight / 2, y]}>
       <boxGeometry args={[width, scaledBoardHeight, thickness]} />
       <meshStandardMaterial
-        color="#a06830"
+        color={BOARD_COLOR}
         roughness={0.9}
         metalness={0.0}
         transparent
@@ -118,9 +165,9 @@ function SoundingBoard({
 // ---------------------------------------------------------------------------
 
 function FluteScene({ design }: { design: FluteDesign }) {
-  const { tubes, gapFills, boards, centerOffset } = useMemo(() => {
+  const { tubes, gapFills, boards } = useMemo(() => {
     const numCols = design.pairs.length;
-    if (numCols === 0) return { tubes: [], gapFills: [], boards: [], centerOffset: 0 };
+    if (numCols === 0) return { tubes: [], gapFills: [], boards: [] };
 
     const scaledSpacing = TUBE_SPACING / SCALE;
     const totalWidth = (numCols - 1) * scaledSpacing;
@@ -132,17 +179,10 @@ function FluteScene({ design }: { design: FluteDesign }) {
     const tubeData: TubeProps[] = [];
     const gapData: { x1: number; x2: number; y: number; height: number }[] = [];
 
-    // Compute tube lengths for sounding board height
-    let maxUpperLen = 0;
-    let maxLowerLen = 0;
-
     for (let i = 0; i < numCols; i++) {
       const [upperNote, lowerNote] = design.pairs[i];
       const upperLen = tubeLength(upperNote);
       const lowerLen = tubeLength(lowerNote);
-
-      if (upperLen > maxUpperLen) maxUpperLen = upperLen;
-      if (lowerLen > maxLowerLen) maxLowerLen = lowerLen;
 
       const x = i * scaledSpacing - offset;
 
@@ -164,7 +204,7 @@ function FluteScene({ design }: { design: FluteDesign }) {
     }
 
     // Sounding boards: thin panels at front and back of each row
-    const boardWidth = totalWidth + (TUBE_OD / SCALE);
+    const boardWidth = totalWidth + TUBE_OD / SCALE;
     const boardsData = [
       { width: boardWidth, y: upperY, boardHeight: OBJ_RESONATING_LENGTH },
       { width: boardWidth, y: lowerY, boardHeight: OBJ_RESONATING_LENGTH },
@@ -174,7 +214,6 @@ function FluteScene({ design }: { design: FluteDesign }) {
       tubes: tubeData,
       gapFills: gapData,
       boards: boardsData,
-      centerOffset: offset,
     };
   }, [design]);
 
@@ -219,28 +258,28 @@ export default function FlutePreview({ design }: FlutePreviewProps) {
 
   return (
     <div className="w-full">
-      <div
-        className="w-full h-64 sm:h-96 rounded-xl border border-bamboo-200 bg-gradient-to-b from-bamboo-50 to-white shadow-sm overflow-hidden"
-      >
-        <Canvas
-          camera={{ position: [0, 8, 16], fov: 45 }}
-          style={{ background: "transparent" }}
-        >
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 10, 7]} intensity={0.8} />
-          <directionalLight position={[-3, 5, -5]} intensity={0.3} />
-          <FluteScene design={design} />
-          <OrbitControls
-            makeDefault
-            enablePan
-            enableZoom
-            enableRotate
-            minDistance={3}
-            maxDistance={40}
-          />
-        </Canvas>
-      </div>
-      <p className="mt-2 text-center text-xs text-bamboo-500 italic">
+      <WebGLErrorBoundary>
+        <div className="w-full h-64 sm:h-96 rounded-xl border border-bamboo-200 bg-gradient-to-b from-bamboo-50 to-white shadow-sm overflow-hidden">
+          <Canvas
+            camera={{ position: [0, 8, 16], fov: 45 }}
+            style={{ background: "transparent" }}
+          >
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 10, 7]} intensity={0.8} />
+            <directionalLight position={[-3, 5, -5]} intensity={0.3} />
+            <FluteScene design={design} />
+            <OrbitControls
+              makeDefault
+              enablePan
+              enableZoom
+              enableRotate
+              minDistance={3}
+              maxDistance={40}
+            />
+          </Canvas>
+        </div>
+      </WebGLErrorBoundary>
+      <p className="mt-2 text-center text-xs text-slate-500 italic">
         Preview is approximate. Final STL may differ slightly.
       </p>
     </div>

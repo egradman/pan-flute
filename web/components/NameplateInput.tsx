@@ -18,7 +18,7 @@ export default function NameplateInput({ value, onChange }: NameplateInputProps)
       <div className="flex items-baseline justify-between mb-1.5">
         <label
           htmlFor="nameplate-text"
-          className="text-sm font-medium text-bamboo-700"
+          className="text-sm font-medium text-slate-700"
         >
           Engraved Text
         </label>
@@ -28,7 +28,7 @@ export default function NameplateInput({ value, onChange }: NameplateInputProps)
               ? "text-red-500 font-medium"
               : isNearLimit
                 ? "text-amber-600"
-                : "text-bamboo-400"
+                : "text-slate-400"
           }`}
         >
           {charCount}/{MAX_LENGTH}
@@ -48,18 +48,18 @@ export default function NameplateInput({ value, onChange }: NameplateInputProps)
         maxLength={MAX_LENGTH}
         placeholder="Enter text for your flute"
         className={`
-          w-full rounded-lg border bg-white/60 px-3 py-2
-          text-sm text-bamboo-800 placeholder:text-bamboo-300
-          shadow-sm backdrop-blur-sm
+          w-full rounded-lg border bg-white px-3 py-2
+          text-sm text-slate-800 placeholder:text-slate-300
+          shadow-sm
           transition-colors duration-150
           outline-none
-          focus:border-bamboo-400 focus:ring-2 focus:ring-bamboo-200
-          ${isEmpty ? "border-bamboo-200" : "border-bamboo-300"}
+          focus:border-violet-400 focus:ring-2 focus:ring-violet-200
+          ${isEmpty ? "border-slate-200" : "border-slate-300"}
         `}
       />
 
       {isEmpty && (
-        <p className="mt-1.5 text-xs text-bamboo-400">
+        <p className="mt-1.5 text-xs text-slate-400">
           Leave blank to use the default nameplate text.
         </p>
       )}

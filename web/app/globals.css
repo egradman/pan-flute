@@ -3,17 +3,59 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 23, 23, 23;
-  --background-start-rgb: 250, 246, 241;
-  --background-end-rgb: 240, 230, 214;
+  --foreground-rgb: 30, 30, 46;
+  --background-rgb: 248, 250, 255;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: rgb(var(--background-start-rgb));
+  background-color: rgb(var(--background-rgb));
 }
 
-/* Smooth scroll for anchor links */
 html {
   scroll-behavior: smooth;
+}
+
+/* Skip navigation link — hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 0.75rem 1.5rem;
+  background: #7c3aed;
+  color: white;
+  font-weight: 700;
+  font-family: var(--font-fredoka), system-ui, sans-serif;
+  border-radius: 0 0 0.75rem 0.75rem;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Piano roll grid — responsive cell sizing (moved from inline <style>) */
+.piano-roll-grid {
+  --cell-w: 36px;
+  --cell-h: 32px;
+  --label-px: 4px;
+  --label-fs: 10px;
+}
+@media (min-width: 640px) {
+  .piano-roll-grid {
+    --cell-w: 36px;
+    --cell-h: 24px;
+    --label-px: 8px;
+    --label-fs: 11px;
+  }
+}
+
+/* Focus ring for piano roll grid cells */
+.piano-roll-grid td:focus {
+  outline: 2px solid #7c3aed;
+  outline-offset: -2px;
+  z-index: 5;
+  position: relative;
 }

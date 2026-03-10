@@ -167,6 +167,13 @@ export async function POST(request: NextRequest) {
         nameplate: nameplate,
         tier: tier,
       },
+      payment_intent_data: {
+        metadata: {
+          notes: JSON.stringify(notes),
+          nameplate: nameplate,
+          tier: tier,
+        },
+      },
       success_url: `${origin}/order/{CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/`,
     });

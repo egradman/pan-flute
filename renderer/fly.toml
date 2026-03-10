@@ -10,7 +10,7 @@ kill_timeout = 30
 
 [build]
   # Build context is the project root (../) so the Dockerfile can COPY
-  # generate_notes.py, pan_flute.scad, pan_tube.stl, and renderer/server.py.
+  # generate_flute.py, box-base.stl, and renderer/server.py.
 
 [env]
   PORT = "8080"

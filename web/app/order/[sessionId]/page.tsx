@@ -1,3 +1,4 @@
+import Link from "next/link";
 import OrderContent from "./OrderContent";
 
 export const runtime = "edge";
@@ -30,7 +31,7 @@ export default async function OrderPage({
 
         {/* Design Another link */}
         <div className="text-center">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-1 text-bamboo-600 underline-offset-2 transition-colors hover:text-bamboo-800 hover:underline"
           >
@@ -48,7 +49,7 @@ export default async function OrderPage({
               />
             </svg>
             Design Another Pan Flute
-          </a>
+          </Link>
         </div>
       </div>
     </main>

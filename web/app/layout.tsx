@@ -15,7 +15,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Pan Flute Designer — by Dash, age 9",
+  title: "Pan Flute Designer — by Dad and Dash (age 9), and Claude Code",
   description:
     "Design your own custom pan flute with our interactive piano roll sequencer. Pick a melody, and we'll generate a 3D-printable pan flute tuned to play it.",
 };

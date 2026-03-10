@@ -4,7 +4,7 @@
 include <notes.scad>
 
 // --- Parameters (overridable via -D on command line) ---
-nameplate_text     = "MARIO";   // override with: openscad -D 'nameplate_text="YOUR TEXT"'
+nameplate_text     = "";        // override with: openscad -D 'nameplate_text="YOUR TEXT"'
 
 // --- Constants ---
 tube_id            = 7.022;     // inner diameter (mm), from OBJ vertex analysis

@@ -60,7 +60,7 @@ export default function NameplateInput({ value, onChange }: NameplateInputProps)
 
       {isEmpty && (
         <p className="mt-1.5 text-xs text-slate-400">
-          Leave blank to use the default nameplate text.
+          Leave blank for no nameplate text.
         </p>
       )}
     </div>

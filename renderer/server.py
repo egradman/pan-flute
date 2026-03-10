@@ -60,7 +60,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         notes = body.get("notes")
-        nameplate = body.get("nameplate", "MARIO")
+        nameplate = body.get("nameplate", "")
 
         if not notes or not isinstance(notes, list):
             self._json_response(HTTPStatus.BAD_REQUEST, {"error": "notes must be a non-empty array"})

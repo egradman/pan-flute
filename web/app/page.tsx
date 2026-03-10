@@ -90,13 +90,40 @@ export default function Home() {
         />
 
         <div className="relative mx-auto max-w-2xl">
-          <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-bamboo-50 sm:text-5xl lg:text-6xl">
-            Design Your Own Pan Flute
+          <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-bamboo-50 sm:text-5xl lg:text-6xl">
+            One-Song Pan Flutes
           </h1>
-          <p className="mx-auto max-w-lg text-lg leading-relaxed text-bamboo-200 sm:text-xl">
-            Create a custom two-tone pan flute, preview it in 3D, and get the
-            STL file to print at home.
-          </p>
+
+          {/* Dash's intro */}
+          <div className="mx-auto max-w-lg rounded-2xl bg-white/10 p-6 text-left backdrop-blur-sm">
+            <div className="mb-4 flex items-center gap-4">
+              {/* Photo placeholder — replace src with Dash's actual photo */}
+              <img
+                src="/dash.jpg"
+                alt="Dash, age 9"
+                className="h-16 w-16 rounded-full border-2 border-bamboo-300 object-cover shadow-md"
+              />
+              <div>
+                <p className="text-lg font-bold text-bamboo-50">
+                  Hi, I&apos;m Dash!
+                </p>
+                <p className="text-sm text-bamboo-300">Age 9 &middot; 3D printing enthusiast</p>
+              </div>
+            </div>
+            <p className="mb-3 text-base leading-relaxed text-bamboo-100">
+              I got a 3D printer this month and the first thing I printed was a
+              pan flute. Only problem? I can&apos;t actually play any songs on it.
+            </p>
+            <p className="mb-3 text-base leading-relaxed text-bamboo-100">
+              So my dad and I vibe-coded this website to design pan flutes that
+              can play at least <span className="font-bold text-white">ONE song</span>.
+              You pick the notes (two-note chords supported!), we generate a
+              custom STL, and you print your very own flute.
+            </p>
+            <p className="text-sm font-medium text-bamboo-300">
+              All proceeds go directly to my printer filament budget.
+            </p>
+          </div>
         </div>
       </header>
 
@@ -116,11 +143,11 @@ export default function Home() {
                 1
               </div>
               <h3 className="mb-2 text-lg font-semibold text-bamboo-800">
-                Compose
+                Pick Your Song
               </h3>
               <p className="text-sm leading-relaxed text-bamboo-600">
-                Click the grid below to select up to two notes for each pipe
-                column. Add or remove columns to shape your melody.
+                Use the grid below to select up to two notes per pipe. Add or
+                remove pipes to match your melody.
               </p>
             </div>
 
@@ -130,11 +157,11 @@ export default function Home() {
                 2
               </div>
               <h3 className="mb-2 text-lg font-semibold text-bamboo-800">
-                Preview
+                Preview It
               </h3>
               <p className="text-sm leading-relaxed text-bamboo-600">
-                Hit play to hear your melody and spin the 3D model to see
-                exactly what your flute will look like.
+                Hit play to hear your tune and spin the 3D model to see
+                exactly what you&apos;ll be printing.
               </p>
             </div>
 
@@ -144,11 +171,11 @@ export default function Home() {
                 3
               </div>
               <h3 className="mb-2 text-lg font-semibold text-bamboo-800">
-                Order
+                Print &amp; Play
               </h3>
               <p className="text-sm leading-relaxed text-bamboo-600">
-                Download the STL file to print at home, or let us print and
-                ship a finished flute to your door.
+                Grab the STL to print at home, or order a finished flute
+                shipped right to your door.
               </p>
             </div>
           </div>
@@ -308,8 +335,8 @@ export default function Home() {
       {/* ================================================================ */}
       <footer className="border-t border-bamboo-200 bg-bamboo-800 px-4 py-6 text-center">
         <p className="text-sm text-bamboo-300">
-          &copy; {new Date().getFullYear()} Pan Flute Designer. All rights
-          reserved.
+          &copy; {new Date().getFullYear()} Dash&apos;s One-Song Pan Flutes.
+          Made with a 3D printer and a lot of vibe coding.
         </p>
       </footer>
     </div>

@@ -12,9 +12,8 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy project files needed for rendering
-COPY generate_notes.py .
-COPY pan_flute.scad .
-COPY pan_tube.stl .
+COPY generate_flute.py .
+COPY box-base.stl .
 
 # Copy the server
 COPY renderer/server.py .

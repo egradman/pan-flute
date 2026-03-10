@@ -87,43 +87,44 @@ class Handler(BaseHTTPRequestHandler):
 
     # ── Render pipeline ────────────────────────────────────────────
     def _do_render(self, notes, nameplate):
-        """Run generate_notes.py then openscad; return STL bytes."""
+        """Run generate_flute.py then openscad; return STL bytes."""
+        # Sanitise nameplate — printable ASCII, no quotes / backslashes.
+        safe_nameplate = "".join(
+            c for c in nameplate if 32 <= ord(c) < 127 and c not in ('"', "\\")
+        )
+
         with tempfile.TemporaryDirectory() as tmp:
             # Write notes JSON
             notes_json = os.path.join(tmp, "notes.json")
             with open(notes_json, "w") as f:
                 json.dump(notes, f)
 
-            # Step 1: generate notes.scad from the JSON
+            # Symlink box-base.stl so the generated .scad can import it
+            os.symlink(
+                os.path.join(WORK_DIR, "box-base.stl"),
+                os.path.join(tmp, "box-base.stl"),
+            )
+
+            # Step 1: generate flute.scad (complete, standalone)
             subprocess.run(
-                ["python3", os.path.join(WORK_DIR, "generate_notes.py"), notes_json],
+                [
+                    "python3", os.path.join(WORK_DIR, "generate_flute.py"),
+                    notes_json, safe_nameplate,
+                ],
                 cwd=tmp,
                 check=True,
                 timeout=10,
                 capture_output=True,
             )
 
-            # Copy supporting files into the temp dir so openscad resolves
-            # relative includes/imports correctly.
-            for name in ("pan_flute.scad", "pan_tube.stl"):
-                src = os.path.join(WORK_DIR, name)
-                dst = os.path.join(tmp, name)
-                os.symlink(src, dst)
-
-            # Step 2: run openscad
+            # Step 2: render STL
             output_stl = os.path.join(tmp, "output.stl")
-            # Sanitise nameplate to avoid OpenSCAD injection — allow only
-            # printable ASCII, no quotes / backslashes.
-            safe_nameplate = "".join(
-                c for c in nameplate if 32 <= ord(c) < 127 and c not in ('"', "\\")
-            )
             subprocess.run(
                 [
                     "xvfb-run", "--auto-servernum",
                     "openscad",
-                    "-D", f'nameplate_text="{safe_nameplate}"',
                     "-o", output_stl,
-                    "pan_flute.scad",
+                    "flute.scad",
                 ],
                 cwd=tmp,
                 check=True,

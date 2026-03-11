@@ -125,14 +125,15 @@ export default function Home() {
                 it.
               </p>
               <p className="mb-3 text-base leading-relaxed text-white/90">
-                So my dad and I vibe-coded this website to let you design pan
-                flutes that can at least play{" "}
-                <span className="font-bold text-yellow-200">ONE song</span>. You
-                pick the notes (two-note chords supported!), we generate a custom
-                STL, and you print your very own flute.
+                So my Dad and I vibe-coded this website to let you custom
+                design a pan flute that plays the{" "}
+                <span className="font-bold text-yellow-200">ONE song</span>{" "}
+                of your choice... just play in order from one end to the
+                other. You pick the notes (two-note chords supported!), we
+                generate a custom STL, and you print your very own flute.
               </p>
               <p className="text-sm font-medium text-white/70">
-                All proceeds go directly to my printer filament budget.
+                All proceeds go directly to my printer filament fund.
               </p>
               <p className="mt-3 text-sm text-white/60">
                 Want the technical details? Check out our{" "}

@@ -92,14 +92,14 @@ interface TubeProps {
   length: number;
 }
 
-/** A single cylindrical tube, standing upright along Y. */
+/** A single square tube, standing upright along Y. */
 function Tube({ x, y, length }: TubeProps) {
   const scaledLength = length / SCALE;
   const scaledOD = TUBE_OD / SCALE;
 
   return (
     <mesh position={[x, scaledLength / 2, y]}>
-      <cylinderGeometry args={[scaledOD / 2, scaledOD / 2, scaledLength, 16]} />
+      <boxGeometry args={[scaledOD, scaledLength, scaledOD]} />
       <meshStandardMaterial color={TUBE_COLOR} roughness={0.7} metalness={0.05} />
     </mesh>
   );
@@ -165,9 +165,9 @@ function SoundingBoard({
 // ---------------------------------------------------------------------------
 
 function FluteScene({ design }: { design: FluteDesign }) {
-  const { tubes, gapFills, boards } = useMemo(() => {
+  const { tubes, gapFills, boards, yOffset } = useMemo(() => {
     const numCols = design.pairs.length;
-    if (numCols === 0) return { tubes: [], gapFills: [], boards: [] };
+    if (numCols === 0) return { tubes: [], gapFills: [], boards: [], yOffset: 0 };
 
     const scaledSpacing = TUBE_SPACING / SCALE;
     const totalWidth = (numCols - 1) * scaledSpacing;
@@ -178,11 +178,13 @@ function FluteScene({ design }: { design: FluteDesign }) {
 
     const tubeData: TubeProps[] = [];
     const gapData: { x1: number; x2: number; y: number; height: number }[] = [];
+    let maxLen = 0;
 
     for (let i = 0; i < numCols; i++) {
       const [upperNote, lowerNote] = design.pairs[i];
       const upperLen = tubeLength(upperNote);
       const lowerLen = tubeLength(lowerNote);
+      maxLen = Math.max(maxLen, upperLen, lowerLen);
 
       const x = i * scaledSpacing - offset;
 
@@ -214,11 +216,12 @@ function FluteScene({ design }: { design: FluteDesign }) {
       tubes: tubeData,
       gapFills: gapData,
       boards: boardsData,
+      yOffset: -(maxLen / SCALE) / 2,
     };
   }, [design]);
 
   return (
-    <group>
+    <group position={[0, yOffset, 0]}>
       {tubes.map((t, i) => (
         <Tube key={`tube-${i}`} x={t.x} y={t.y} length={t.length} />
       ))}
